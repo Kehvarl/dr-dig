@@ -1,7 +1,7 @@
 module Main
   class AnimSprite
     attr_sprite
-    attr_accessor :current_pose, :current_frame, :x, :y, :dx, :dy, :moving, :vx, :vy
+    attr_accessor :pose_list, :current_pose, :current_frame, :x, :y, :dx, :dy, :moving, :vx, :vy
 
     def initialize(x,y, is_player=false)
       @is_player = is_player
