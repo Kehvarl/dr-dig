@@ -1,5 +1,5 @@
 require 'app/game.rb'
-require 'app/sprite.rb'
+require 'app/game_sprites.rb'
 
 module Main
   def initialize args
