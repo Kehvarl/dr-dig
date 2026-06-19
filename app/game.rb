@@ -1,14 +1,7 @@
 module Main
   class Game
     def initialize vars={}
-      @player = AnimSprite.new(640, 576, true)
-      @player.path = "sprites/ball.png"
-      @player.tile_w = 32
-      @player.tile_h = 32
-      @player.pose_list = {
-        #Name: [Row, Frames, Repeat, [Next Anim Options]]
-        idle: [0,8,1,[:idle]],
-      }
+      @player = Player.new(640, 576, true)
 
       @world_w = 1280/16
       @world_h = 576/16
