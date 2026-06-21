@@ -5,8 +5,8 @@ module Main
     def initialize (x,y, is_player)
       super(x,y,is_player)
       @path= "sprites/ball.png"
-      @w= 64
-      @h= 64
+      @w= 32
+      @h= 32
       @tile_w= 32
       @tile_h= 32
       @vx = 2
@@ -24,7 +24,7 @@ module Main
         hurt:   [6,4,1, [:idle]],
         coin:   [7,3,1, [:idle]],
         dash:   [8,1,1, [:idle]],
-        walk:    [9,4,1, [:idle]]        
+        walk:   [9,4,1, [:idle]]
       }
 
       @frame_duration = 10
