@@ -1,4 +1,4 @@
-class Game_Map
+class GameMap
   attr_accessor :w, :h, :grid, :viewport, :check_tile, :build_playfield, :draw_rt, :render
   def initialize
     @w = 40
@@ -9,19 +9,23 @@ class Game_Map
     @viewport = {x:0,y:0,w:40,h:18}
   end
 
-  def create_tile(x, y, visible=true, block_movement=true)
-    {x:x, y:y, visible=visible, block_movement=block_movement}
+  def create_tile(x, y, visible=true, block_movement=true, destroyable=true)
+    {x:x, y:y, visible:visible, block_movement:block_movement, destroyable:destroyable}
   end
 
-  def check_tile(x,y)
+  def tile_blocked?(x,y)
     tiles = @grid.select{|g| g.x == x and g.y == y}
     return tiles.any? { |t| t.block_movement  }
   end
 
-  def build_playfield()
-    (0..p.h-1).each do |ph|
-      (0..p.w-1).each do |pw|
-        @grid << create_tile(pw + p.x, ph + p.y, true, true}
+  def dig_tile(x,y)
+    @grid=  @grid.excluding{ |t| t.x == x and t.y == y and t.destroyable == true }
+  end
+
+  def build_playfield
+    (0..@h-1).each do |ph|
+      (0..@w-1).each do |pw|
+        @grid << create_tile(pw + 0, ph + 0, true, true, true)
       end
     end
   end
@@ -32,7 +36,7 @@ class Game_Map
     args.outputs[:game_map].primitives << {x:0,y:0,w:(@w*@tile_size),h:(@h*@tile_size),
                                           **@background}.solid!
 
-    args.outputs[:game_map].primitives << draw_playfield
+    args.outputs[:game_map].primitives << draw_playfield()
   end
 
   def draw_playfield

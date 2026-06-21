@@ -35,11 +35,11 @@ module Main
       }
     end
 
-    def move_to(x,y)
+    def move_to(x,y,pose=:walk)
       @dx = x
       @dy = y
       @moving = true
-      @current_pose = :walk
+      @current_pose = pose
     end
 
     def max_frame()
