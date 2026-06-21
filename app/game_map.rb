@@ -9,17 +9,19 @@ class Game_Map
     @viewport = {x:0,y:0,w:40,h:18}
   end
 
-  def check_tile(x,y,climbing=false,falling=true)
-    tile = @grid.select{|g| g.x == x and g.y == y}[0]
-    return (climbing and tile.block_climb) or (falling and tile.block_fall)
+  def create_tile(x, y, visible=true, block_movement=true)
+    {x:x, y:y, visible=visible, block_movement=block_movement}
   end
 
-  def build_playfield(playfield_model)
-    playfield_model[0].each do |p|
-      (0..p.h-1).each do |ph|
-        (0..p.w-1).each do |pw|
-          @grid << {x: pw + p.x, y: ph + p.y, block_climb:true, block_fall:true}
-        end
+  def check_tile(x,y)
+    tiles = @grid.select{|g| g.x == x and g.y == y}
+    return tiles.any? { |t| t.block_movement  }
+  end
+
+  def build_playfield()
+    (0..p.h-1).each do |ph|
+      (0..p.w-1).each do |pw|
+        @grid << create_tile(pw + p.x, ph + p.y, true, true}
       end
     end
   end
@@ -36,13 +38,13 @@ class Game_Map
   def draw_playfield
     out = []
     @grid.each do |p|
-      out << {x:p.x*@tile_size, y:p.y*@tile_size, w:@tile_size, h:@tile_size, path: "sprites/square/gray.png"}.sprite!
-      if p.x == 0
-        out << {x:79*@tile_size, y:p.y*@tile_size, w:@tile_size, h:@tile_size, path: "sprites/square/gray.png"}.sprite!
+      a = 255
+      if not p.visible
+        a = 0
       end
-      #if p.y == 0
-      #  out << {x:p.x*16, y:44*16, w:16, h:16, path: "sprites/square/gray.png"}.sprite!
-      #end
+      out << {x:p.x*@tile_size, y:p.y*@tile_size,
+              w:@tile_size, h:@tile_size, a:a,
+              path: "sprites/square/gray.png"}.sprite!
     end
     out
   end
