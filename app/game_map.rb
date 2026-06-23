@@ -22,6 +22,14 @@ class GameMap
     @grid=  @grid.excluding{ |t| t.x == x and t.y == y and t.destroyable == true }
   end
 
+  def get_coord(x, y)
+    [x*@tile_size, y*@tile_size]
+  end
+
+  def get_tile(wx, wy)
+    [wx/@tile_size, wy/@tile_size]
+  end
+
   def build_playfield
     (0..@h-1).each do |ph|
       (0..@w-1).each do |pw|
