@@ -1,17 +1,20 @@
 module Main
   class AnimSprite
     attr_sprite
-    attr_accessor :pose_list, :current_pose, :current_frame, :x, :y, :dx, :dy, :moving, :vx, :vy
+    attr_accessor :pose_list, :current_pose, :current_frame, :x, :y, :dx, :dy, :moving, :vx, :vy, :is_player, :map, :tile
 
-    def initialize(x,y, is_player=false)
+    def initialize(x, y, th, tw, is_player=false)
       @is_player = is_player
+      @map = {x:x, y:y}
+      @tile = {h:th, w:tw}
       @vx = 1
       @vy = 1
-      @x = x
-      @y = y
+      @x = x * tw
+      @y = y * th
       @moving = false
-      @dx = x
-      @dy = y
+      @destination = {x:nil, y:nil}
+      @dx = x * tw
+      @dy = y * th
       @w = 64
       @h = 64
       @path= "sprites/circle/green.png"
@@ -36,8 +39,9 @@ module Main
     end
 
     def move_to(x,y,pose=:walk)
-      @dx = x
-      @dy = y
+      @destination = {x:x, y:y}
+      @dx = x * @tile.w
+      @dy = y * @tile.h
       @moving = true
       @current_pose = pose
     end
@@ -87,6 +91,7 @@ module Main
       end
       if (@dx == @x and @dy == @y) or collisions.size >1
         @moving = false
+        @map = @destination.dup()
         @flip_horizontally = false
         @current_pose = @pose_list[@current_pose][3].sample()
       end

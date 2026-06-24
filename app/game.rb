@@ -1,15 +1,14 @@
 module Main
   class Game
     def initialize vars={}, args
-      @player = Player.new(1280, 576, true)
 
       @world_w = 1280/16 #40
       @world_h = 576/16 #18
       @world = GameMap.new()
       @world.build_playfield
 
-      wx, wy = @world.get_coord(20, 18)
-      @player.move_to(wx, wy, :idle)
+      @player = Player.new(40,18, 32, 32, true)
+      @player.move_to(20,18, :idle)
     end
 
     def render
@@ -22,19 +21,17 @@ module Main
     end
 
     def jump
-      x, y = @world.get_tile(@player.x, @player.y)
-      if !@world.tile_blocked?(x, y + 1)
-        wx, wy = @world.get_coord(x, y + 1)
-        @player.move_to(wx, wy+1, :idle)
+      if !@world.tile_blocked?(@player.map.x, @player.map.y)
+        puts @player.map
+        @player.move_to(@player.map.x, @player.map.y + 1, :idle)
       end
     end
 
     def fall
       if ! @player.moving
-        x, y = @world.get_tile(@player.x, @player.y)
-        if !@world.tile_blocked?(x, y)
-          wx, wy = @world.get_coord(x, y - 1)
-          @player.move_to(wx, wy+1, :idle)
+        puts @player.map
+        if !@world.tile_blocked?(@player.map.x, @player.map.y - 1)
+          @player.move_to(@player.map.x, @player.map.y - 1, :idle)
         end
       end
     end
