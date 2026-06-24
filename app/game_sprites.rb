@@ -2,8 +2,8 @@ require 'app/sprite.rb'
 module Main
 
   class Player < AnimSprite
-    def initialize (x,y, is_player)
-      super(x,y,is_player)
+    def initialize (x,y, tw, th, is_player)
+      super(x,y,tw, th, is_player)
       @path= "sprites/ball.png"
       @w= 32
       @h= 32
