@@ -2,6 +2,14 @@ require 'app/game.rb'
 require 'app/game_sprites.rb'
 require 'app/game_map.rb'
 
+# gmae
+#  game -world/map
+#  sprites/entities
+#  Input handling and dispatch
+
+# All Tile to Pixel conversions are done by World.
+# 
+
 module Main
   def initialize args
     args.state.game = Game.new({})
