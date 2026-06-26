@@ -8,7 +8,12 @@ require 'app/game_map.rb'
 #  Input handling and dispatch
 
 # All Tile to Pixel conversions are done by World.
-# 
+#
+
+# Update
+# Maybe I should just start fresh instead of importing tools that I don't understand clearly
+# Or fix my tools.
+# But that's silly.
 
 module Main
   def initialize args
