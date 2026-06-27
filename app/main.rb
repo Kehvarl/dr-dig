@@ -15,6 +15,7 @@ require 'app/game_map.rb'
 # Or fix my tools.
 # But that's silly.
 
+#no update
 module Main
   def initialize args
     args.state.game = Game.new({})
