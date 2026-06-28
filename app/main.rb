@@ -13,9 +13,8 @@ require 'app/game_map.rb'
 # Update
 # Maybe I should just start fresh instead of importing tools that I don't understand clearly
 # Or fix my tools.
-# But that's silly.
 
-#no update
+
 module Main
   def initialize args
     args.state.game = Game.new({})
