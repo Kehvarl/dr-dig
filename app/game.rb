@@ -4,6 +4,7 @@ module Main
       @background = build_background()
       @grid = build_grid()
       @tile_size = 32
+      @player = {x:20, y:18}
     end
 
     def build_background
@@ -45,10 +46,15 @@ module Main
       out = []
       out << @background
       out << render_grid()
+      out << {x:@player.x * @tile_size, y:@player.y * @tile_size,
+              w: @tile_size, h:@tile_size, path:'sprites/circle/blue.png'}.sprite!
       out
     end
 
     def tick (args)
+      #Check Gravity
+      #Get Input
+      #Update Map
     end
   end
 end
