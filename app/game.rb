@@ -4,7 +4,8 @@ module Main
       @background = build_background()
       @grid = build_grid()
       @tile_size = 32
-      @player = {x:20, y:18}
+      @player = {x:40, y:18, moving:false}
+      start_move(@player, 20, 18)
     end
 
     def build_background
@@ -46,13 +47,53 @@ module Main
       out = []
       out << @background
       out << render_grid()
-      out << {x:@player.x * @tile_size, y:@player.y * @tile_size,
-              w: @tile_size, h:@tile_size, path:'sprites/circle/blue.png'}.sprite!
+      out << {x:@player.anim_from.x, y:@player.anim_from.y,
+              w: @tile_size, h:@tile_size, path:'sprites/circle/black.png'}.sprite!
       out
     end
 
+    def can_fall?(obj)
+      return if obj.falling or (obj.y <= 0)
+      supporting_tile = @grid.find{|t| t.x = objx and t.y = obj.y-1}
+      return supporting_tile.block_movement
+    end
+
+    def check_gravity(obj)
+      if can_fall?(obj)
+        start_move(obj, obj.x)#, obj.y -1)
+      end
+    end
+
+    def start_move(obj, to_x, to_y)
+      obj.move_to = {x:to_x, y:to_y}
+      obj.anim_from = {x:obj.x * @tile_size, y:obj.y * @tile_size}
+      obj.anim_to = {x:to_x * @tile_size, y:to_y * @tile_size}
+      obj.moving = true
+    end
+
+    def do_move(obj)
+      puts(obj)
+      if obj.anim_from.x < obj.anim_to.x
+        obj.anim_from.x += 2
+      elsif obj.anim_from.x > obj.anim_to.x
+        obj.anim_from.x -= 2
+      elsif obj.anim_from.y < obj.anim_to.y
+        obj.anim_from.y += 2
+      elsif obj.anim_from.y < obj.anim_to.y
+        obj.anim_from.y -= 2
+      else
+        obj.moving = false
+        obj.x = obj.move_to.x
+        obj.y = obj.move_to.y
+      end
+    end
+
+
     def tick (args)
       #Check Gravity
+      if @player.moving
+        do_move(@player)
+      end
       #Get Input
       #Update Map
     end
