@@ -5,6 +5,7 @@ module Main
       @grid = build_grid()
       @tile_size = 32
       @player = {x:40, y:18, moving:false}
+      set_render(@player)
       start_move(@player, 20, 18)
     end
 
@@ -32,13 +33,11 @@ module Main
     def render_grid
       out = []
       @grid.each do |p|
-        a = 255
-        if not p.visible
-          a = 0
+        if p.visible
+          out << {x:p.x*@tile_size, y:p.y*@tile_size,
+                  w:@tile_size, h:@tile_size,
+                  path: "sprites/square/gray.png"}.sprite!
         end
-        out << {x:p.x*@tile_size, y:p.y*@tile_size,
-                w:@tile_size, h:@tile_size, a:a,
-                path: "sprites/square/gray.png"}.sprite!
       end
       out
     end
@@ -47,54 +46,75 @@ module Main
       out = []
       out << @background
       out << render_grid()
-      out << {x:@player.anim_from.x, y:@player.anim_from.y,
+      out << {x:@player.render_pos.x, y:@player.render_pos.y,
               w: @tile_size, h:@tile_size, path:'sprites/circle/black.png'}.sprite!
       out
     end
 
+    def dig(obj)
+      supporting_tile = @grid.find{|t| (t.x == obj.x and t.y == (obj.y - 1))}
+      supporting_tile.hp -= 1
+      if supporting_tile.hp <= 0
+        supporting_tile.block_movement = false
+        supporting_tile.visible = false
+      end
+
+    end
+
     def can_fall?(obj)
-      return if obj.falling or (obj.y <= 0)
-      supporting_tile = @grid.find{|t| t.x = objx and t.y = obj.y-1}
-      return supporting_tile.block_movement
+      return false if obj.moving or (obj.y <= 0)
+      supporting_tile = @grid.find{|t| (t.x == obj.x and t.y == (obj.y - 1))}
+      return (not supporting_tile.block_movement)
     end
 
     def check_gravity(obj)
       if can_fall?(obj)
-        start_move(obj, obj.x)#, obj.y -1)
+        start_move(obj, obj.x, (obj.y - 1))
       end
     end
 
     def start_move(obj, to_x, to_y)
       obj.move_to = {x:to_x, y:to_y}
-      obj.anim_from = {x:obj.x * @tile_size, y:obj.y * @tile_size}
       obj.anim_to = {x:to_x * @tile_size, y:to_y * @tile_size}
       obj.moving = true
     end
 
+    def set_render(obj)
+      obj.render_pos = {x:obj.x * @tile_size, y:obj.y * @tile_size}
+    end
+
     def do_move(obj)
       puts(obj)
-      if obj.anim_from.x < obj.anim_to.x
-        obj.anim_from.x += 2
-      elsif obj.anim_from.x > obj.anim_to.x
-        obj.anim_from.x -= 2
-      elsif obj.anim_from.y < obj.anim_to.y
-        obj.anim_from.y += 2
-      elsif obj.anim_from.y < obj.anim_to.y
-        obj.anim_from.y -= 2
+      if obj.render_pos.x < obj.anim_to.x
+        obj.render_pos.x += 2
+      elsif obj.render_pos.x > obj.anim_to.x
+        obj.render_pos.x -= 2
+      elsif obj.render_pos.y < obj.anim_to.y
+        obj.render_pos.y += 2
+      elsif obj.render_pos.y < obj.anim_to.y
+        obj.render_pos.y -= 2
       else
         obj.moving = false
         obj.x = obj.move_to.x
         obj.y = obj.move_to.y
+        set_render(obj)
       end
     end
 
 
     def tick (args)
       #Check Gravity
+      check_gravity(@player)
+
       if @player.moving
         do_move(@player)
       end
-      #Get Input
+      if not @player.moving
+        #Get Input
+        if args.inputs.keyboard.key_up.down
+          dig(@player)
+        end
+      end
       #Update Map
     end
   end
