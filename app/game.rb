@@ -51,19 +51,26 @@ module Main
       out
     end
 
+    def get_tile(x, y)
+      tile =  @grid.find{|t| (t.x == x and t.y == y)}
+      if tile
+        return tile
+      end
+      return create_tile(x, y, false, false, false, 0)
+    end
+
     def dig(obj)
-      supporting_tile = @grid.find{|t| (t.x == obj.x and t.y == (obj.y - 1))}
+      supporting_tile = get_tile(obj.x, (obj.y - 1))
       supporting_tile.hp -= 1
       if supporting_tile.hp <= 0
         supporting_tile.block_movement = false
         supporting_tile.visible = false
       end
-
     end
 
     def can_fall?(obj)
       return false if obj.moving or (obj.y <= 0)
-      supporting_tile = @grid.find{|t| (t.x == obj.x and t.y == (obj.y - 1))}
+      supporting_tile = get_tile(obj.x, (obj.y - 1))
       return (not supporting_tile.block_movement)
     end
 
@@ -71,6 +78,21 @@ module Main
       if can_fall?(obj)
         start_move(obj, obj.x, (obj.y - 1))
       end
+    end
+
+    def can_move(obj, direction)
+      case direction
+      when :left
+        tile = get_tile((obj.x - 1), obj.y)
+        return (tile.hp <= 0 and not tile.block_movement)
+      when :right
+        tile = get_tile((obj.x + 1), obj.y)
+        return (tile.hp <= 0 and not tile.block_movement)
+      when :down
+        tile = get_tile(obj.x, (obj.y - 1))
+        return (tile.hp <= 0 and not tile.block_movement)
+      end
+      return false
     end
 
     def start_move(obj, to_x, to_y)
@@ -84,7 +106,6 @@ module Main
     end
 
     def do_move(obj)
-      puts(obj)
       if obj.render_pos.x < obj.anim_to.x
         obj.render_pos.x += 2
       elsif obj.render_pos.x > obj.anim_to.x
@@ -113,6 +134,18 @@ module Main
         #Get Input
         if args.inputs.keyboard.key_up.down
           dig(@player)
+        elsif args.inputs.keyboard.key_up.left
+          if can_move(@player, :left)
+            start_move(@player, @player.x - 1, @player.y)
+          else
+            dig(@player.x - 1, @player.y)
+          end
+        elsif args.inputs.keyboard.key_up.right
+          if can_move(@player, :right)
+            start_move(@player, @player.x + 1, @player.y)
+          else
+            dig(@player.x + 1, @player.y)
+          end
         end
       end
       #Update Map
