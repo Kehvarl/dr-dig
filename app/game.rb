@@ -1,10 +1,11 @@
 module Main
   class Game
-    def initialize vars={}, args
+    def initialize vars={}
+      @tile_size = 32
+      @speed = 4
       @background = build_background()
       @grid = build_grid()
-      @tile_size = 32
-      @player = {x:40, y:18, moving:false}
+      @player = {x:40, y:18, moving:false, coyote:15}
       set_render(@player)
       start_move(@player, 20, 18)
     end
@@ -24,7 +25,7 @@ module Main
       grid = []
       (0..h-1).each do |ph|
         (0..w-1).each do |pw|
-          grid << create_tile(pw + 0, ph + 0, true, true, true)
+          grid << create_tile(pw, ph)
         end
       end
       grid
@@ -68,6 +69,23 @@ module Main
       end
     end
 
+    def dig_at(x, y)
+      tile = get_tile(x, y)
+      tile.hp -= 1
+      if tile.hp <= 0
+        tile.block_movement = false
+        tile.visible = false
+      end
+    end
+
+    def can_climb(obj)
+      return false if obj.moving
+      left_tile = get_tile(obj.x - 1, obj.y)
+      right_tile = get_tile(obj.x + 1, obj.y)
+      return (left_tile.block_movement or right_tile.block_movement)
+    end
+
+
     def can_fall?(obj)
       return false if obj.moving or (obj.y <= 0)
       supporting_tile = get_tile(obj.x, (obj.y - 1))
@@ -76,7 +94,11 @@ module Main
 
     def check_gravity(obj)
       if can_fall?(obj)
-        start_move(obj, obj.x, (obj.y - 1))
+        if obj.coyote <= 0
+          start_move(obj, obj.x, (obj.y - 1))
+        else
+          obj.coyote -= 1
+        end
       end
     end
 
@@ -84,13 +106,16 @@ module Main
       case direction
       when :left
         tile = get_tile((obj.x - 1), obj.y)
-        return (tile.hp <= 0 and not tile.block_movement)
+        return (not tile.block_movement)
       when :right
         tile = get_tile((obj.x + 1), obj.y)
-        return (tile.hp <= 0 and not tile.block_movement)
+        return (not tile.block_movement)
       when :down
         tile = get_tile(obj.x, (obj.y - 1))
-        return (tile.hp <= 0 and not tile.block_movement)
+        return (not tile.block_movement)
+      when :up
+        tile = get_tile(obj.x, (obj.y + 1))
+        return (not tile.block_movement)
       end
       return false
     end
@@ -107,17 +132,18 @@ module Main
 
     def do_move(obj)
       if obj.render_pos.x < obj.anim_to.x
-        obj.render_pos.x += 2
+        obj.render_pos.x += @speed
       elsif obj.render_pos.x > obj.anim_to.x
-        obj.render_pos.x -= 2
+        obj.render_pos.x -= @speed
       elsif obj.render_pos.y < obj.anim_to.y
-        obj.render_pos.y += 2
-      elsif obj.render_pos.y < obj.anim_to.y
-        obj.render_pos.y -= 2
+        obj.render_pos.y += @speed
+      elsif obj.render_pos.y > obj.anim_to.y
+        obj.render_pos.y -= @speed
       else
         obj.moving = false
         obj.x = obj.move_to.x
         obj.y = obj.move_to.y
+        obj.coyote = 15
         set_render(obj)
       end
     end
@@ -133,18 +159,27 @@ module Main
       if not @player.moving
         #Get Input
         if args.inputs.keyboard.key_up.down
-          dig(@player)
+          dig_at(@player.x, @player.y - 1)
+        elsif args.inputs.keyboard.key_up.up
+          if can_climb(@player)
+            if can_move(@player, :up)
+              start_move(@player, @player.x, @player.y + 1)
+            else
+              dig_at(@player.x, @player.y + 1)
+              @player.coyote = 15
+            end
+          end
         elsif args.inputs.keyboard.key_up.left
           if can_move(@player, :left)
             start_move(@player, @player.x - 1, @player.y)
           else
-            dig(@player.x - 1, @player.y)
+            dig_at(@player.x - 1, @player.y)
           end
         elsif args.inputs.keyboard.key_up.right
           if can_move(@player, :right)
             start_move(@player, @player.x + 1, @player.y)
           else
-            dig(@player.x + 1, @player.y)
+            dig_at(@player.x + 1, @player.y)
           end
         end
       end
