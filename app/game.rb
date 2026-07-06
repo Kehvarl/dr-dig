@@ -17,7 +17,7 @@ module Main
       out
     end
 
-    def create_tile(x, y, visible=true, block_movement=true, destroyable=true, hp=3)
+    def create_tile(x, y, visible=true, block_movement=true, destroyable=true, hp=2)
       {x:x, y:y, visible:visible, block_movement:block_movement, destroyable:destroyable, hp:hp}
     end
 
@@ -58,15 +58,6 @@ module Main
         return tile
       end
       return create_tile(x, y, false, false, false, 0)
-    end
-
-    def dig(obj)
-      supporting_tile = get_tile(obj.x, (obj.y - 1))
-      supporting_tile.hp -= 1
-      if supporting_tile.hp <= 0
-        supporting_tile.block_movement = false
-        supporting_tile.visible = false
-      end
     end
 
     def dig_at(x, y)
