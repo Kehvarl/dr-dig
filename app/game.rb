@@ -139,6 +139,33 @@ module Main
       end
     end
 
+    def check_input(args)
+      if args.inputs.keyboard.key_up.down
+        dig_at(@player.x, @player.y - 1)
+      elsif args.inputs.keyboard.key_up.up
+        if can_climb(@player)
+          if can_move(@player, :up)
+            start_move(@player, @player.x, @player.y + 1)
+          else
+            dig_at(@player.x, @player.y + 1)
+            @player.coyote = 15
+          end
+        end
+      elsif args.inputs.keyboard.key_up.left
+        if can_move(@player, :left)
+          start_move(@player, @player.x - 1, @player.y)
+        else
+          dig_at(@player.x - 1, @player.y)
+        end
+      elsif args.inputs.keyboard.key_up.right
+        if can_move(@player, :right)
+          start_move(@player, @player.x + 1, @player.y)
+        else
+          dig_at(@player.x + 1, @player.y)
+        end
+      end
+    end
+
 
     def tick (args)
       #Check Gravity
@@ -146,33 +173,8 @@ module Main
 
       if @player.moving
         do_move(@player)
-      end
-      if not @player.moving
-        #Get Input
-        if args.inputs.keyboard.key_up.down
-          dig_at(@player.x, @player.y - 1)
-        elsif args.inputs.keyboard.key_up.up
-          if can_climb(@player)
-            if can_move(@player, :up)
-              start_move(@player, @player.x, @player.y + 1)
-            else
-              dig_at(@player.x, @player.y + 1)
-              @player.coyote = 15
-            end
-          end
-        elsif args.inputs.keyboard.key_up.left
-          if can_move(@player, :left)
-            start_move(@player, @player.x - 1, @player.y)
-          else
-            dig_at(@player.x - 1, @player.y)
-          end
-        elsif args.inputs.keyboard.key_up.right
-          if can_move(@player, :right)
-            start_move(@player, @player.x + 1, @player.y)
-          else
-            dig_at(@player.x + 1, @player.y)
-          end
-        end
+      else
+        check_input(args)
       end
       #Update Map
     end
