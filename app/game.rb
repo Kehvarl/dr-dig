@@ -140,9 +140,9 @@ module Main
     end
 
     def check_input(args)
-      if args.inputs.keyboard.key_up.down
+      if args.inputs.down
         dig_at(@player.x, @player.y - 1)
-      elsif args.inputs.keyboard.key_up.up
+      elsif args.inputs.up
         if can_climb(@player)
           if can_move(@player, :up)
             start_move(@player, @player.x, @player.y + 1)
@@ -151,13 +151,13 @@ module Main
             @player.coyote = 15
           end
         end
-      elsif args.inputs.keyboard.key_up.left
+      elsif args.inputs.left
         if can_move(@player, :left)
           start_move(@player, @player.x - 1, @player.y)
         else
           dig_at(@player.x - 1, @player.y)
         end
-      elsif args.inputs.keyboard.key_up.right
+      elsif args.inputs.right
         if can_move(@player, :right)
           start_move(@player, @player.x + 1, @player.y)
         else
