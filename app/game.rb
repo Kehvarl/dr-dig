@@ -90,6 +90,8 @@ module Main
         else
           obj.coyote -= 1
         end
+      else
+        obj.cotote = 15
       end
     end
 
@@ -124,17 +126,25 @@ module Main
     def do_move(obj)
       if obj.render_pos.x < obj.anim_to.x
         obj.render_pos.x += @speed
+        obj.down = false
       elsif obj.render_pos.x > obj.anim_to.x
         obj.render_pos.x -= @speed
+        obj.down = false
       elsif obj.render_pos.y < obj.anim_to.y
         obj.render_pos.y += @speed
+        obj.down = false
       elsif obj.render_pos.y > obj.anim_to.y
         obj.render_pos.y -= @speed
+        obj.down = true
       else
         obj.moving = false
         obj.x = obj.move_to.x
         obj.y = obj.move_to.y
-        obj.coyote = 15
+        if obj.down
+          check_gravity(obj)
+        else
+          obj.coyote = 15
+        end
         set_render(obj)
       end
     end
