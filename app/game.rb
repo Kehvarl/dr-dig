@@ -91,7 +91,7 @@ module Main
           obj.coyote -= 1
         end
       else
-        obj.cotote = 15
+        obj.coyote = 15
       end
     end
 
