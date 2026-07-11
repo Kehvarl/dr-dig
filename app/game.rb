@@ -76,7 +76,6 @@ module Main
       return (left_tile.block_movement or right_tile.block_movement)
     end
 
-
     def can_fall?(obj)
       return false if obj.moving or (obj.y <= 0)
       supporting_tile = get_tile(obj.x, (obj.y - 1))
@@ -176,6 +175,9 @@ module Main
       end
     end
 
+
+    # Let's think about movement
+    #
 
     def tick (args)
       #Check Gravity
